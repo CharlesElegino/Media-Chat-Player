@@ -1,1 +1,4 @@
 Media Player is a desktop music player built with Java and JavaFX. It lets users manage and play a local music library, browse for audio files, and follow songs through a chat-style lyric view with synchronized .lrc lyrics and animated images. The interface also includes search, playback controls, and light and dark themes.
+<img width="1402" height="939" alt="image" src="https://github.com/user-attachments/assets/8885c20b-9f4b-4911-b5b9-e42823bebfbb" /> <img width="1402" height="939" alt="image" src="https://github.com/user-attachments/assets/083f2813-fb11-4067-8163-fa0cf4c8e533" />
+<img width="1402" height="939" alt="image" src="https://github.com/user-attachments/assets/75e8a2f0-5052-42e5-b45b-7ea8f6f81f09" /> <img width="1402" height="939" alt="image" src="https://github.com/user-attachments/assets/102d26f5-a2c3-476e-981d-56f664410c86" />
+
