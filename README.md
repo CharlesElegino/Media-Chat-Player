@@ -1,0 +1,1 @@
+Media Player is a desktop music player built with Java and JavaFX. It lets users manage and play a local music library, browse for audio files, and follow songs through a chat-style lyric view with synchronized .lrc lyrics and animated images. The interface also includes search, playback controls, and light and dark themes.
