@@ -57,6 +57,8 @@ public class SecondaryController {
     @FXML private VBox lyricsBox;
     @FXML private Button playButton;
     @FXML private javafx.scene.control.Slider seekSlider;
+    @FXML private javafx.scene.control.Slider volumeSlider;
+    @FXML private Label volumePercentLabel;
     @FXML private Label elapsedLabel;
     @FXML private Label durationLabel;
     private boolean useTimedLyrics;
@@ -75,6 +77,9 @@ public class SecondaryController {
         useTimedLyrics = "Barbie Girl".equalsIgnoreCase(title.trim());
         if (useTimedLyrics) timedMessages = lyricTest.barbieGirl();
         String mediaUri = App.getSelectedMediaUri();
+        volumePercentLabel.setText(formatVolumePercent(volumeSlider.getValue()));
+        volumeSlider.valueProperty().addListener((observable, oldValue, newValue) ->
+                volumePercentLabel.setText(formatVolumePercent(newValue.doubleValue())));
         initializePlayback(mediaUri);
         loadEmbeddedMetadata(mediaUri);
 
@@ -183,6 +188,9 @@ public class SecondaryController {
         try {
             MediaPlayer player = new MediaPlayer(new Media(mediaUri));
             App.setMediaPlayer(player);
+            player.setVolume(volumeSlider.getValue());
+            volumeSlider.valueProperty().addListener((observable, oldValue, newValue) ->
+                    player.setVolume(newValue.doubleValue()));
             playButton.setDisable(false);
             player.setOnReady(() -> {
                 Duration duration = player.getTotalDuration();
@@ -371,6 +379,10 @@ public class SecondaryController {
     private String formatTime(Duration duration) {
         int seconds = Math.max(0, (int) duration.toSeconds());
         return String.format("%d:%02d", seconds / 60, seconds % 60);
+    }
+
+    private String formatVolumePercent(double volume) {
+        return String.format("%d%%", Math.round(volume * 100));
     }
 
     private String formatLyricTime(long millis) {

@@ -47,28 +47,32 @@
         <VBox spacing="9.0" styleClass="player-bar">
             <padding><Insets top="12.0" right="30.0" bottom="15.0" left="30.0"/></padding>
             <Slider fx:id="seekSlider" min="0.0" max="100.0" value="0.0" styleClass="seek-slider"/>
-            <BorderPane>
+            <StackPane>
+              <BorderPane>
                 <left>
                     <VBox spacing="2.0" alignment="CENTER_LEFT">
                         <Label fx:id="barTitle" text="Track title" styleClass="bar-title"/>
                         <Label fx:id="barArtist" text="Artist" styleClass="bar-artist"/>
                     </VBox>
                 </left>
-                <center>
-                    <HBox alignment="CENTER" spacing="22.0">
-                        <Button text="↶" onAction="#skipBackward" styleClass="control-button" accessibleText="Skip backward 10 seconds"/>
-                        <Button fx:id="playButton" text="▶" onAction="#togglePlay" styleClass="play-button"/>
-                        <Button text="↷" onAction="#skipForward" styleClass="control-button" accessibleText="Skip forward 10 seconds"/>
-                    </HBox>
-                </center>
+                <center><Region/></center>
                 <right>
                     <HBox alignment="CENTER_RIGHT" spacing="5.0">
+                        <Label text="VOL" styleClass="time-label"/>
+                        <Slider fx:id="volumeSlider" min="0.0" max="1.0" value="1.0" prefWidth="90.0" accessibleText="Volume"/>
+                        <Label fx:id="volumePercentLabel" text="100%" styleClass="time-label"/>
                         <Label fx:id="elapsedLabel" text="0:00" styleClass="time-label"/>
                         <Label text="/" styleClass="time-label"/>
                         <Label fx:id="durationLabel" text="0:00" styleClass="time-label"/>
                     </HBox>
                 </right>
-            </BorderPane>
+              </BorderPane>
+              <HBox alignment="CENTER" spacing="22.0">
+                  <Button text="⏪" onAction="#skipBackward" styleClass="control-button" accessibleText="Skip backward 10 seconds"/>
+                  <Button fx:id="playButton" text="▶" onAction="#togglePlay" styleClass="play-button"/>
+                  <Button text="⏩" onAction="#skipForward" styleClass="control-button" accessibleText="Skip forward 10 seconds"/>
+              </HBox>
+            </StackPane>
         </VBox>
     </bottom>
 </BorderPane>

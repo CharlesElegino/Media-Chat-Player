@@ -53,7 +53,7 @@
 .footer-copy { -fx-text-fill: #9aa3ae; -fx-font-size: 10px; }
 .control-button { -fx-background-color: transparent; -fx-background-radius: 50; -fx-min-width: 34px; -fx-min-height: 34px; -fx-text-fill: #8e98a4; -fx-font-size: 16px; -fx-cursor: hand; }
 .control-button:hover { -fx-background-color: #eef0f5; -fx-text-fill: #6255c9; }
-.time-label { -fx-text-fill: #8c96a2; -fx-font-size: 10px; }
+.time-label { -fx-text-fill: #8c96a2; -fx-font-size: 11px; }
 .track-progress { -fx-accent: #786ae1; -fx-pref-height: 4px; }
 .track-progress > .track { -fx-background-color: #eceef2; -fx-background-radius: 4; }
 .track-progress > .bar { -fx-background-radius: 4; -fx-background-insets: 0; }
@@ -78,8 +78,8 @@
 .lyric-left { -fx-background-color: #f0f2f6; -fx-text-fill: #394351; -fx-background-radius: 14 14 14 4; }
 .lyric-right { -fx-background-color: #7567df; -fx-text-fill: white; -fx-background-radius: 14 14 4 14; }
 .player-bar { -fx-background-color: white; -fx-border-color: #e9ecf1 transparent transparent transparent; -fx-min-height: 128px; -fx-spacing: 14px; }
-.bar-title { -fx-text-fill: #303946; -fx-font-size: 10px; -fx-font-weight: bold; }
-.bar-artist { -fx-text-fill: #929ba7; -fx-font-size: 9px; }
+.bar-title { -fx-text-fill: #303946; -fx-font-size: 12px; -fx-font-weight: bold; }
+.bar-artist { -fx-text-fill: #929ba7; -fx-font-size: 10px; }
 .theme-toggle-button { -fx-background-color: transparent; -fx-padding: 0; -fx-alignment: CENTER; -fx-content-display: GRAPHIC_ONLY; -fx-cursor: hand; }
 .theme-toggle-button:hover { -fx-background-color: transparent; }
 .theme-toggle-track { -fx-background-color: #83cbd8; -fx-background-radius: 50%; -fx-min-width: 46px; -fx-pref-width: 46px; -fx-min-height: 46px; -fx-pref-height: 46px; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.28), 5, 0, 0, 2); }
