@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.image.ImageView?>
+
+<BorderPane fx:id="rootPane" styleClass="player-shell" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="charleselegino.media_player.SecondaryController">
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="14.0" styleClass="player-header">
+            <padding><Insets top="20.0" right="30.0" bottom="16.0" left="30.0"/></padding>
+            <Button text="←  Library" onAction="#switchToPrimary" styleClass="back-button"/>
+            <VBox spacing="3.0">
+                <Label fx:id="trackTitle" text="Track title" styleClass="player-page-title"/>
+                <Label fx:id="trackArtist" text="Artist" styleClass="player-page-subtitle"/>
+            </VBox>
+            <Region HBox.hgrow="ALWAYS"/>
+            <HBox alignment="CENTER_RIGHT" spacing="12.0">
+                <Label text="LYRIC VIEW" styleClass="eyebrow"/>
+                <Button text="Add lyrics" onAction="#addLyrics" styleClass="add-lyrics-button"/>
+            </HBox>
+        </HBox>
+    </top>
+    <center>
+        <StackPane fx:id="artworkPanel" styleClass="artwork-panel">
+            <ImageView fx:id="wallpaperImage" preserveRatio="false" smooth="true" mouseTransparent="true" styleClass="wallpaper-image"/>
+            <Region mouseTransparent="true" styleClass="wallpaper-tint"/>
+            <ScrollPane fx:id="lyricsScroll" fitToWidth="true" visible="false" managed="false" styleClass="lyrics-scroll">
+                <content><VBox fx:id="lyricsBox" spacing="18.0" styleClass="lyrics-box"/></content>
+            </ScrollPane>
+            <VBox fx:id="emptyState" alignment="CENTER" spacing="9.0" styleClass="lyrics-empty">
+                <Label text="♫" styleClass="lyrics-empty-icon"/>
+                <Label text="No lyric chat yet" styleClass="lyrics-empty-title"/>
+                <Label text="Lyrics for this track will appear here when they’re available." wrapText="true" styleClass="lyrics-empty-copy"/>
+            </VBox>
+        </StackPane>
+    </center>
+    <bottom>
+        <VBox spacing="9.0" styleClass="player-bar">
+            <padding><Insets top="12.0" right="30.0" bottom="15.0" left="30.0"/></padding>
+            <Slider fx:id="seekSlider" min="0.0" max="100.0" value="0.0" styleClass="seek-slider"/>
+            <BorderPane>
+                <left>
+                    <VBox spacing="2.0" alignment="CENTER_LEFT">
+                        <Label fx:id="barTitle" text="Track title" styleClass="bar-title"/>
+                        <Label fx:id="barArtist" text="Artist" styleClass="bar-artist"/>
+                    </VBox>
+                </left>
+                <center>
+                    <HBox alignment="CENTER" spacing="22.0">
+                        <Button text="↶" onAction="#skipBackward" styleClass="control-button" accessibleText="Skip backward 10 seconds"/>
+                        <Button fx:id="playButton" text="▶" onAction="#togglePlay" styleClass="play-button"/>
+                        <Button text="↷" onAction="#skipForward" styleClass="control-button" accessibleText="Skip forward 10 seconds"/>
+                    </HBox>
+                </center>
+                <right>
+                    <HBox alignment="CENTER_RIGHT" spacing="5.0">
+                        <Label fx:id="elapsedLabel" text="0:00" styleClass="time-label"/>
+                        <Label text="/" styleClass="time-label"/>
+                        <Label fx:id="durationLabel" text="0:00" styleClass="time-label"/>
+                    </HBox>
+                </right>
+            </BorderPane>
+        </VBox>
+    </bottom>
+</BorderPane>
