@@ -67,7 +67,7 @@
                     </HBox>
                 </right>
               </BorderPane>
-              <HBox alignment="CENTER" spacing="22.0">
+              <HBox alignment="CENTER" spacing="22.0" pickOnBounds="false">
                   <Button text="⏪" onAction="#skipBackward" styleClass="control-button" accessibleText="Skip backward 10 seconds"/>
                   <Button fx:id="playButton" text="&#x25B6;" onAction="#togglePlay" styleClass="play-button"/>
                   <Button text="⏩" onAction="#skipForward" styleClass="control-button" accessibleText="Skip forward 10 seconds"/>

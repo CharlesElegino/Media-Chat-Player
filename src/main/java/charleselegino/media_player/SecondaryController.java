@@ -82,6 +82,12 @@ public class SecondaryController {
         volumePercentLabel.setText(formatVolumePercent(volumeSlider.getValue()));
         volumeSlider.valueProperty().addListener((observable, oldValue, newValue) ->
                 volumePercentLabel.setText(formatVolumePercent(newValue.doubleValue())));
+        volumeSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+            MediaPlayer activePlayer = App.getMediaPlayer();
+            if (activePlayer != null) {
+                activePlayer.setVolume(Math.max(0.0, Math.min(1.0, newValue.doubleValue())));
+            }
+        });
         initializePlayback(mediaUri);
         loadEmbeddedMetadata(mediaUri);
 
@@ -228,8 +234,6 @@ public class SecondaryController {
 
     private void bindPlaybackControls(MediaPlayer player) {
         volumeSlider.setValue(player.getVolume());
-        volumeSlider.valueProperty().addListener((observable, oldValue, newValue) ->
-                player.setVolume(newValue.doubleValue()));
         player.currentTimeProperty().addListener((observable, oldTime, currentTime) -> {
             elapsedLabel.setText(formatTime(currentTime));
             if (!seekSlider.isValueChanging()) seekSlider.setValue(currentTime.toSeconds());
