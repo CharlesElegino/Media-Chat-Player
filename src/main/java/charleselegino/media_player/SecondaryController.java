@@ -124,13 +124,14 @@ public class SecondaryController {
             }
             AudioFile parsedFile = AudioFileIO.read(audioFile);
             Tag tag = parsedFile.getTag();
-            if (tag == null) return new TrackMetadata(null, "");
+            if (tag == null) return new TrackMetadata(null, "", null);
             Artwork artwork = tag.getFirstArtwork();
             byte[] imageBytes = artwork == null ? null : artwork.getBinaryData();
             String lyrics = tag.getFirst(FieldKey.LYRICS);
-            return new TrackMetadata(imageBytes, lyrics == null ? "" : lyrics);
+            String artist = tag.getFirst(FieldKey.ARTIST);
+            return new TrackMetadata(imageBytes, lyrics == null ? "" : lyrics, artist);
         } catch (Exception exception) {
-            return new TrackMetadata(null, "");
+            return new TrackMetadata(null, "", null);
         } finally {
             if (temporaryFile != null) {
                 try { Files.deleteIfExists(temporaryFile); } catch (IOException ignored) { }
@@ -139,6 +140,10 @@ public class SecondaryController {
     }
 
     private void displayMetadata(TrackMetadata metadata) {
+        if (metadata.artist != null && !metadata.artist.trim().isEmpty()) {
+            trackArtist.setText(metadata.artist.trim());
+            barArtist.setText(metadata.artist.trim());
+        }
         if (metadata.artwork != null && metadata.artwork.length > 0) {
             Image image = new Image(new ByteArrayInputStream(metadata.artwork));
             if (!image.isError()) {
@@ -180,10 +185,12 @@ public class SecondaryController {
     private static final class TrackMetadata {
         private final byte[] artwork;
         private final String lyrics;
+        private final String artist;
 
-        private TrackMetadata(byte[] artwork, String lyrics) {
+        private TrackMetadata(byte[] artwork, String lyrics, String artist) {
             this.artwork = artwork;
             this.lyrics = lyrics;
+            this.artist = artist;
         }
     }
 

@@ -3,6 +3,7 @@ package charleselegino.media_player;
 import java.io.IOException;
 import java.io.File;
 import java.io.InputStream;
+import java.io.ByteArrayInputStream;
 import java.net.URI;
 import java.net.JarURLConnection;
 import java.net.URL;
@@ -31,6 +32,9 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Button;
+import javafx.scene.Node;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -263,12 +267,24 @@ public class PrimaryController {
                     }
                     audioFile = temporaryFile.toFile();
                 }
-                int seconds = org.jaudiotagger.audio.AudioFileIO.read(audioFile)
-                        .getAudioHeader().getTrackLength();
-                if (seconds > 0) {
-                    String formatted = String.format("%d:%02d", seconds / 60, seconds % 60);
+                org.jaudiotagger.audio.AudioFile parsedAudio = org.jaudiotagger.audio.AudioFileIO.read(audioFile);
+                int seconds = parsedAudio.getAudioHeader().getTrackLength();
+                org.jaudiotagger.tag.Tag tag = parsedAudio.getTag();
+                String embeddedArtist = tag == null ? null : tag.getFirst(org.jaudiotagger.tag.FieldKey.ARTIST);
+                org.jaudiotagger.tag.images.Artwork embeddedArtwork = tag == null ? null : tag.getFirstArtwork();
+                byte[] artworkBytes = embeddedArtwork == null ? null : embeddedArtwork.getBinaryData();
+                if (seconds > 0 || (artworkBytes != null && artworkBytes.length > 0)
+                        || (embeddedArtist != null && !embeddedArtist.trim().isEmpty())) {
+                    String formatted = seconds > 0 ? String.format("%d:%02d", seconds / 60, seconds % 60) : null;
                     Platform.runLater(() -> {
-                        track.duration = formatted;
+                        if (formatted != null) track.duration = formatted;
+                        if (embeddedArtist != null && !embeddedArtist.trim().isEmpty()) {
+                            track.artist = embeddedArtist.trim();
+                        }
+                        if (artworkBytes != null && artworkBytes.length > 0) {
+                            Image artwork = new Image(new ByteArrayInputStream(artworkBytes));
+                            if (!artwork.isError()) track.artwork = artwork;
+                        }
                         if (activeTrackList != null) activeTrackList.refresh();
                     });
                 }
@@ -340,8 +356,9 @@ public class PrimaryController {
 
     private static final class Track {
         private final String title;
-        private final String artist;
+        private volatile String artist;
         private volatile String duration;
+        private volatile Image artwork;
         private final String color;
         private final String glyph;
         private final String mediaUri;
@@ -366,10 +383,21 @@ public class PrimaryController {
                 return;
             }
 
-            Label album = new Label(track.glyph);
-            album.setAlignment(Pos.CENTER);
-            album.setMinSize(42, 42);
-            album.setStyle("-fx-background-color: " + track.color + "; -fx-background-radius: 12; -fx-text-fill: white; -fx-font-size: 17px; -fx-font-weight: bold;");
+            Node album;
+            if (track.artwork != null) {
+                ImageView artwork = new ImageView(track.artwork);
+                artwork.setFitWidth(42);
+                artwork.setFitHeight(42);
+                artwork.setPreserveRatio(false);
+                artwork.setSmooth(true);
+                album = artwork;
+            } else {
+                Label initials = new Label(track.glyph);
+                initials.setAlignment(Pos.CENTER);
+                initials.setMinSize(42, 42);
+                initials.setStyle("-fx-background-color: " + track.color + "; -fx-background-radius: 12; -fx-text-fill: white; -fx-font-size: 17px; -fx-font-weight: bold;");
+                album = initials;
+            }
             Label title = new Label(track.title);
             title.getStyleClass().add("track-title");
             Label artist = new Label(track.artist);
