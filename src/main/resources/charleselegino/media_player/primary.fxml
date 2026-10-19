@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane fx:id="rootPane" styleClass="app-shell" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="charleselegino.media_player.PrimaryController">
+    <left>
+        <VBox spacing="22.0" styleClass="sidebar">
+            <padding><Insets top="28.0" right="18.0" bottom="20.0" left="18.0"/></padding>
+            <HBox alignment="CENTER_LEFT" spacing="11.0">
+                <Label text="♫" styleClass="brand-mark"/>
+                <Label text="SOUNDBOARD" styleClass="brand-name"/>
+            </HBox>
+            <VBox spacing="7.0">
+                <Label text="WORKSPACE" styleClass="eyebrow"/>
+                <Button text="⌂    Home" styleClass="nav-button"/>
+                <Button text="◷    Recently played" styleClass="nav-button"/>
+                <Button text="♡    Favorites" styleClass="nav-button"/>
+            </VBox>
+            <VBox spacing="7.0" VBox.vgrow="ALWAYS">
+                <Label text="YOUR LIBRARY" styleClass="eyebrow"/>
+                <Button text="♫    All tracks" styleClass="nav-button nav-active" focusTraversable="false"/>
+                <Button text="▤    Playlists" styleClass="nav-button"/>
+            </VBox>
+            <Button fx:id="themeButton" onAction="#toggleTheme" styleClass="theme-toggle-button" minWidth="52.0" prefWidth="52.0" maxWidth="52.0" minHeight="52.0" prefHeight="52.0" maxHeight="52.0" alignment="CENTER">
+                <graphic>
+                    <StackPane fx:id="themeTrack" prefWidth="46.0" minWidth="46.0" prefHeight="46.0" minHeight="46.0" styleClass="theme-toggle-track">
+                        <children>
+                            <Label fx:id="themeStars" text="✦  ·  ✧" styleClass="theme-toggle-stars"/>
+                            <Label fx:id="themeClouds" text="☁" styleClass="theme-toggle-clouds"/>
+                            <Label fx:id="themeOrb" text="☀" styleClass="theme-toggle-orb"/>
+                        </children>
+                    </StackPane>
+                </graphic>
+            </Button>
+            <VBox spacing="4.0" styleClass="profile-card">
+                <Label text="CE" styleClass="profile-avatar"/>
+                <VBox spacing="2.0">
+                    <Label text="Your library" styleClass="profile-title"/>
+                    <Label text="Personal collection" styleClass="profile-subtitle"/>
+                </VBox>
+            </VBox>
+        </VBox>
+    </left>
+    <center>
+        <VBox spacing="18.0" styleClass="main-content">
+            <padding><Insets top="30.0" right="32.0" bottom="22.0" left="32.0"/></padding>
+            <HBox alignment="CENTER_LEFT" spacing="12.0">
+                <VBox spacing="4.0" HBox.hgrow="ALWAYS">
+                    <Label text="Your music" styleClass="page-title"/>
+                    <Label text="A little room for everything you love." styleClass="page-subtitle"/>
+                </VBox>
+                <Button text="＋  Add music" onAction="#addMusic" styleClass="accent-button"/>
+            </HBox>
+            <HBox alignment="CENTER_LEFT" spacing="10.0" styleClass="search-box">
+                <Label text="⌕" styleClass="search-icon"/>
+                <TextField fx:id="searchField" promptText="Search tracks or artists" styleClass="search-field"/>
+            </HBox>
+            <HBox alignment="CENTER_LEFT" spacing="12.0" styleClass="list-heading">
+                <Label text="RECENTLY ADDED" styleClass="eyebrow"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label text="TITLE" styleClass="column-label"/>
+                <Region prefWidth="100.0"/>
+                <Label text="TIME" styleClass="column-label"/>
+            </HBox>
+            <ListView fx:id="trackList" VBox.vgrow="ALWAYS" styleClass="track-list"/>
+            <HBox alignment="CENTER_LEFT" spacing="8.0" styleClass="footer-note">
+                <Label text="♫" styleClass="footer-icon"/>
+                <Label text="Your collection, ready when you are." styleClass="footer-copy"/>
+            </HBox>
+        </VBox>
+    </center>
+</BorderPane>
