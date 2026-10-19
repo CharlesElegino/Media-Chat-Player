@@ -2,6 +2,7 @@ package charleselegino.media_player;
 
 import java.io.IOException;
 import java.io.File;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.JarURLConnection;
 import java.net.URL;
@@ -51,6 +52,7 @@ public class PrimaryController {
     });
     private static boolean sampleFolderScannerStarted;
     private static final ObservableList<Track> tracks = createDefaultTracks();
+    private static ListView<Track> activeTrackList;
 
     private static ObservableList<Track> createDefaultTracks() {
         List<SampleAudio> samples = discoverSampleAudio();
@@ -177,7 +179,11 @@ public class PrimaryController {
                             SampleAudio sample = new SampleAudio(path.getFileName().toString(), uri);
                             Platform.runLater(() -> {
                                 boolean alreadyPresent = tracks.stream().anyMatch(track -> track.mediaUri.equals(uri));
-                                if (!alreadyPresent) tracks.add(createTrack(sample, tracks.size()));
+                                if (!alreadyPresent) {
+                                    Track track = createTrack(sample, tracks.size());
+                                    tracks.add(track);
+                                    loadTrackDuration(track);
+                                }
                             });
                         } catch (IOException ignored) {
                             // A file may still be copying; a later scan will try again.
@@ -198,6 +204,7 @@ public class PrimaryController {
     @FXML private StackPane themeTrack;
     @FXML
     private void initialize() {
+        activeTrackList = trackList;
         applyTheme();
         startSampleFolderScanner();
         FilteredList<Track> filteredTracks = new FilteredList<>(tracks, track -> true);
@@ -214,6 +221,7 @@ public class PrimaryController {
                 openTrack(selectedTrack);
             }
         });
+        for (Track track : tracks) loadTrackDuration(track);
     }
 
     @FXML
@@ -231,7 +239,49 @@ public class PrimaryController {
         String title = extension > 0 ? filename.substring(0, extension) : filename;
         Track addedTrack = new Track(title, "Local music file", "—", "#7566B8", "♫", selectedFile.toURI().toString());
         tracks.add(0, addedTrack);
+        loadTrackDuration(addedTrack);
         openTrack(addedTrack);
+    }
+
+    private static void loadTrackDuration(Track track) {
+        Thread durationReader = new Thread(() -> {
+            Path temporaryFile = null;
+            try {
+                URI uri = URI.create(track.mediaUri);
+                File audioFile;
+                if ("file".equalsIgnoreCase(uri.getScheme())) {
+                    audioFile = new File(uri);
+                } else {
+                    URL url = uri.toURL();
+                    String path = url.getPath();
+                    int extensionIndex = path.lastIndexOf('.');
+                    String extension = extensionIndex >= 0 && extensionIndex < path.length() - 1
+                            ? path.substring(extensionIndex) : ".audio";
+                    temporaryFile = Files.createTempFile("media-player-duration-", extension);
+                    try (InputStream input = url.openStream()) {
+                        Files.copy(input, temporaryFile, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+                    }
+                    audioFile = temporaryFile.toFile();
+                }
+                int seconds = org.jaudiotagger.audio.AudioFileIO.read(audioFile)
+                        .getAudioHeader().getTrackLength();
+                if (seconds > 0) {
+                    String formatted = String.format("%d:%02d", seconds / 60, seconds % 60);
+                    Platform.runLater(() -> {
+                        track.duration = formatted;
+                        if (activeTrackList != null) activeTrackList.refresh();
+                    });
+                }
+            } catch (Exception ignored) {
+                // Keep the placeholder if this file's duration cannot be read.
+            } finally {
+                if (temporaryFile != null) {
+                    try { Files.deleteIfExists(temporaryFile); } catch (IOException ignored) { }
+                }
+            }
+        }, "track-duration-reader");
+        durationReader.setDaemon(true);
+        durationReader.start();
     }
 
     @FXML
@@ -271,6 +321,14 @@ public class PrimaryController {
     }
 
     private void openTrack(Track selected) {
+        if (selected.mediaUri.equals(App.getSelectedMediaUri()) && App.getMediaPlayer() != null) {
+            try {
+                App.setRoot("secondary");
+            } catch (IOException exception) {
+                throw new IllegalStateException("Could not open the player view", exception);
+            }
+            return;
+        }
         App.stopMediaPlayer();
         App.setCurrentTrack(selected.title, selected.artist, selected.mediaUri);
         try {
@@ -283,7 +341,7 @@ public class PrimaryController {
     private static final class Track {
         private final String title;
         private final String artist;
-        private final String duration;
+        private volatile String duration;
         private final String color;
         private final String glyph;
         private final String mediaUri;

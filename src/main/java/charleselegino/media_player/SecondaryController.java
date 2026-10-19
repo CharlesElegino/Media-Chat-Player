@@ -44,6 +44,8 @@ import org.jaudiotagger.tag.images.Artwork;
 public class SecondaryController {
 
     private static final double SKIP_SECONDS = 10.0;
+    private static final String PLAY_ICON = "\u25B6";
+    private static final String PAUSE_ICON = "\u23F8";
 
     @FXML private BorderPane rootPane;
     @FXML private Label trackTitle;
@@ -186,27 +188,34 @@ public class SecondaryController {
         }
 
         try {
+            MediaPlayer existingPlayer = App.getMediaPlayer();
+            if (existingPlayer != null && mediaUri.equals(App.getSelectedMediaUri())) {
+                MediaPlayer player = existingPlayer;
+                Duration duration = player.getTotalDuration();
+                if (duration != null && !duration.isUnknown() && !duration.isIndefinite()) {
+                    seekSlider.setMax(duration.toSeconds());
+                    durationLabel.setText(formatTime(duration));
+                }
+                bindPlaybackControls(player);
+                elapsedLabel.setText(formatTime(player.getCurrentTime()));
+                seekSlider.setValue(player.getCurrentTime().toSeconds());
+                playButton.setDisable(false);
+                playButton.setText(player.getStatus() == MediaPlayer.Status.PLAYING ? PAUSE_ICON : PLAY_ICON);
+                return;
+            }
+
             MediaPlayer player = new MediaPlayer(new Media(mediaUri));
             App.setMediaPlayer(player);
-            player.setVolume(volumeSlider.getValue());
-            volumeSlider.valueProperty().addListener((observable, oldValue, newValue) ->
-                    player.setVolume(newValue.doubleValue()));
             playButton.setDisable(false);
             player.setOnReady(() -> {
                 Duration duration = player.getTotalDuration();
                 seekSlider.setMax(duration.toSeconds());
                 durationLabel.setText(formatTime(duration));
                 player.play();
-                playButton.setText("Ⅱ");
+                playButton.setText(PAUSE_ICON);
             });
-            player.currentTimeProperty().addListener((observable, oldTime, currentTime) -> {
-                elapsedLabel.setText(formatTime(currentTime));
-                if (!seekSlider.isValueChanging()) seekSlider.setValue(currentTime.toSeconds());
-                if (useTimedLyrics) updateTimedLyrics(currentTime.toMillis());
-            });
-            seekSlider.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> seekFromPointer(event, player));
-            seekSlider.addEventFilter(MouseEvent.MOUSE_DRAGGED, event -> seekFromPointer(event, player));
-            player.setOnEndOfMedia(() -> playButton.setText("▶"));
+            bindPlaybackControls(player);
+            player.setOnEndOfMedia(() -> playButton.setText(PLAY_ICON));
             player.setOnError(() -> {
                 playButton.setDisable(true);
                 playButton.setText("!");
@@ -215,6 +224,19 @@ public class SecondaryController {
             playButton.setDisable(true);
             playButton.setText("!");
         }
+    }
+
+    private void bindPlaybackControls(MediaPlayer player) {
+        volumeSlider.setValue(player.getVolume());
+        volumeSlider.valueProperty().addListener((observable, oldValue, newValue) ->
+                player.setVolume(newValue.doubleValue()));
+        player.currentTimeProperty().addListener((observable, oldTime, currentTime) -> {
+            elapsedLabel.setText(formatTime(currentTime));
+            if (!seekSlider.isValueChanging()) seekSlider.setValue(currentTime.toSeconds());
+            if (useTimedLyrics) updateTimedLyrics(currentTime.toMillis());
+        });
+        seekSlider.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> seekFromPointer(event, player));
+        seekSlider.addEventFilter(MouseEvent.MOUSE_DRAGGED, event -> seekFromPointer(event, player));
     }
 
     @FXML
@@ -398,10 +420,10 @@ public class SecondaryController {
         if (player == null) return;
         if (player.getStatus() == MediaPlayer.Status.PLAYING) {
             player.pause();
-            playButton.setText("▶");
+            playButton.setText(PLAY_ICON);
         } else {
             player.play();
-            playButton.setText("Ⅱ");
+            playButton.setText(PAUSE_ICON);
         }
     }
 
@@ -432,7 +454,6 @@ public class SecondaryController {
 
     @FXML
     private void switchToPrimary() throws IOException {
-        App.stopMediaPlayer();
         App.setRoot("primary");
     }
 }
